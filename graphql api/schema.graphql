@@ -1,0 +1,38 @@
+enum Role {
+  expert
+  member
+}
+
+type User {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  tel: String
+  role: Role
+}
+
+type Course {
+  id: ID!
+  courseName: String
+  coursePrice: String
+  owner: User
+}
+
+type Query {
+  users: [User]
+  user(id: ID!): User
+  courses: [Course]
+  course(id: ID!): Course
+}
+
+type Mutation {
+  createUser(
+    firstName: String
+    lastName: String
+    email: String
+    tel: String
+  ): User
+
+  createCourse(courseName: String, coursePrice: String): Course
+}
