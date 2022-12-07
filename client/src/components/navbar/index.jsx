@@ -11,8 +11,13 @@ function Navbar() {
       </div>
       <div className={styles.menuCon}>
         <Menu mode="horizontal">
-          <Menu.Item key="mail">
-            <a href="/add-course">Add course</a>
+          <Menu.Item key="addCourse">
+            <Link href="/add-course">Add course</Link>
+          </Menu.Item>
+          <Menu.Item key="checkoutWithoutProduct">
+            <Link href="/checkout-without-product">
+              Create a Checkout without products
+            </Link>
           </Menu.Item>
         </Menu>
       </div>
