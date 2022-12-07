@@ -1,11 +1,12 @@
-import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import styles from "../styles/Home.module.css";
 import { gql, useMutation } from "@apollo/client";
 import Navbar from "../src/components/navbar";
 import DynamicField from "../src/components/dynamicFields";
+import { useRouter } from "next/router";
 
 const AddCourse = () => {
+  const router = useRouter();
   const ADD_TODO = gql`
     mutation Mutation(
       $courseName: String
@@ -48,6 +49,8 @@ const AddCourse = () => {
               coursePrice,
               courseStripeId: data.price,
             },
+          }).then(() => {
+            router.push("/");
           });
         });
     } catch (error) {
@@ -85,7 +88,7 @@ const AddCourse = () => {
             <Input />
           </Form.Item>
           <DynamicField />
-          <Form.Item label=" ">
+          <Form.Item style={{ textAlign: "center" }}>
             <Button type="primary" htmlType="submit" style={{ width: "60%" }}>
               Confirm
             </Button>

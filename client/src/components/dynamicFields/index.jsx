@@ -7,7 +7,14 @@ function DynamicField() {
     <Form.List name="coursePrices">
       {(fields, { add, remove }) => {
         return (
-          <div>
+          <div
+            style={{
+              display: "flex",
+              alignContent: "center",
+              flexDirection: "column",
+              alignItems: "stretch",
+            }}
+          >
             {fields.map((field, index) => (
               <div key={field.key}>
                 <Divider>Course prise {index + 1}</Divider>
@@ -32,11 +39,11 @@ function DynamicField() {
               </div>
             ))}
             <Divider />
-            <Form.Item>
+            <Form.Item style={{ textAlign: "center" }}>
               <Button
                 type="ghost"
                 onClick={() => add()}
-                style={{ width: "60%" }}
+                style={{ width: "30%" }}
               >
                 <PlusOutlined /> Add a price
               </Button>
