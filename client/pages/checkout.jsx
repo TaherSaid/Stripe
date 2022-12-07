@@ -1,21 +1,29 @@
 import { loadStripe } from "@stripe/stripe-js";
 import { Button } from "antd";
 
-const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
+export async function getServerSideProps(context) {
+  const { StripeId } = context.query;
+  return {
+    props: { StripeId },
+  };
+}
+const stripePromise = loadStripe(
+  `pk_test_51M9FZvLv1GvWMcZ2SHCVJJo0McI2g7E0q5ur85WH0eJDR8KusMUsBlsOGN11DWJD895UwBKEYnQl7RXipsAE49P500w8inn12T`
+);
 
-export default function Checkout() {
+export default function Checkout({ StripeId }) {
   const handleClick = async (event) => {
-    const { sessionId } = await fetch("./api/checkout/session", {
+    const response = await fetch("./api/checkout/session", {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({ quantity: 1 }),
-    }).then((res) => res.json());
-    const stripe = await stripePromise;
-    const { error } = await stripe.redirectToCheckout({
-      sessionId,
+      body: JSON.stringify({ StripeId }),
     });
+    const { sessionId } = await response.json();
+
+    const stripe = await stripePromise;
+    const { error } = await stripe.redirectToCheckout({ sessionId });
   };
   return (
     <div>

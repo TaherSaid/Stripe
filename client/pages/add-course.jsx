@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import styles from "../styles/Home.module.css";
 import { gql, useMutation } from "@apollo/client";
@@ -6,8 +6,16 @@ import Navbar from "../src/components/navbar";
 
 const AddCourse = () => {
   const ADD_TODO = gql`
-    mutation Mutation($courseName: String, $coursePrice: String) {
-      createCourse(courseName: $courseName, coursePrice: $coursePrice) {
+    mutation Mutation(
+      $courseName: String
+      $coursePrice: String
+      $courseStripeId: String
+    ) {
+      createCourse(
+        courseName: $courseName
+        coursePrice: $coursePrice
+        courseStripeId: $courseStripeId
+      ) {
         id
         courseName
         coursePrice
@@ -15,16 +23,31 @@ const AddCourse = () => {
     }
   `;
   const [addTodo, { data, loading, error }] = useMutation(ADD_TODO);
-  const onFinish = (e) => {
+
+  const onFinish = async (e) => {
     try {
-      console.log(e);
-      addTodo({
-        variables: { courseName: e.courseName, coursePrice: e.coursePrice },
-      });
+      fetch("./api/create-product/create", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ ...e }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          addTodo({
+            variables: {
+              courseName: e.courseName,
+              coursePrice: e.coursePrice,
+              courseStripeId: data.priceId,
+            },
+          }).then((res) => console.log(res));
+        });
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <div>
       <Navbar />

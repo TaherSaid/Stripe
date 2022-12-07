@@ -1,9 +1,10 @@
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { Avatar, Card } from "antd";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
-const ProductCard = ({ productPrice, productName }) => {
+const ProductCard = ({ productPrice, productName, StripeId }) => {
   return (
     <Card
       cover={
@@ -15,9 +16,15 @@ const ProductCard = ({ productPrice, productName }) => {
         />
       }
       actions={[
-        <a href="/checkout" key="checkout">
+        <Link
+          href={{
+            pathname: "/checkout",
+            query: { StripeId },
+          }}
+          key="checkout"
+        >
           <ShoppingCartOutlined />
-        </a>,
+        </Link>,
       ]}
     >
       <Card.Meta
