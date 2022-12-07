@@ -29,7 +29,6 @@ const resolvers = {
       const user = users.find(
         (user) => "d144e558-0eb4-42ad-9416-494351478a96" === user.id
       );
-      console.log(user);
       const newCourse = {
         id,
         owner: user,

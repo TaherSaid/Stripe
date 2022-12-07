@@ -6,17 +6,23 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export default async function handler(req, res) {
   let price;
+  const { courseName, coursePrices } = req.body;
   try {
     const product = await stripe.products.create({
-      name: req.body.courseName,
+      name: courseName,
     });
-    price = await stripe.prices.create({
-      unit_amount: req.body.coursePrice,
-      currency: "usd",
-      product: product.id,
-    });
+    price = await Promise.all(
+      coursePrices.map(async (coursePrice) => {
+        const stripePrice = await stripe.prices.create({
+          unit_amount: coursePrice,
+          currency: "usd",
+          product: product.id,
+        });
+        return stripePrice.id;
+      })
+    );
   } catch (error) {
-    res.status(400).json({ error: "enable to add new product " });
+    res.status(400).json({ error: "Enable to add new product " });
   }
-  res.status(200).json({ priceId: price.id });
+  res.status(200).json({ price });
 }

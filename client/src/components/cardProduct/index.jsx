@@ -1,4 +1,3 @@
-import { ShoppingCartOutlined } from "@ant-design/icons";
 import { Avatar, Card } from "antd";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,22 +14,23 @@ const ProductCard = ({ productPrice, productName, StripeId }) => {
           height={300}
         />
       }
-      actions={[
-        <Link
-          href={{
-            pathname: "/checkout",
-            query: { StripeId },
-          }}
-          key="checkout"
-        >
-          <ShoppingCartOutlined />
-        </Link>,
-      ]}
+      actions={productPrice.map((price, index) => {
+        return (
+          <Link
+            href={{
+              pathname: "/checkout",
+              query: { StripeId: StripeId[index] },
+            }}
+            key="checkout"
+          >
+            {`$ ${price}`}
+          </Link>
+        );
+      })}
     >
       <Card.Meta
         avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
         title={productName}
-        description={`$ ${productPrice}`}
       />
     </Card>
   );

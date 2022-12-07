@@ -3,13 +3,14 @@ import { Button, Form, Input } from "antd";
 import styles from "../styles/Home.module.css";
 import { gql, useMutation } from "@apollo/client";
 import Navbar from "../src/components/navbar";
+import DynamicField from "../src/components/dynamicFields";
 
 const AddCourse = () => {
   const ADD_TODO = gql`
     mutation Mutation(
       $courseName: String
-      $coursePrice: String
-      $courseStripeId: String
+      $coursePrice: [String]
+      $courseStripeId: [String]
     ) {
       createCourse(
         courseName: $courseName
@@ -23,25 +24,31 @@ const AddCourse = () => {
     }
   `;
   const [addTodo] = useMutation(ADD_TODO);
-
   const onFinish = (e) => {
     try {
+      const coursePrice = e?.coursePrices?.map((coursePrise) => {
+        return coursePrise.coursPrice;
+      });
+
       fetch("./api/create-product/create", {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ ...e }),
+        body: JSON.stringify({
+          courseName: e.courseName,
+          coursePrices: coursePrice,
+        }),
       })
         .then((response) => response.json())
         .then((data) => {
           addTodo({
             variables: {
               courseName: e.courseName,
-              coursePrice: e.coursePrice,
-              courseStripeId: data.priceId,
+              coursePrice,
+              courseStripeId: data.price,
             },
-          }).then((res) => console.log(res));
+          });
         });
     } catch (error) {
       console.error(error);
@@ -56,7 +63,7 @@ const AddCourse = () => {
         <h1>Add new course</h1>
         <Form
           labelCol={{
-            flex: "110px",
+            flex: "180px",
           }}
           labelAlign="left"
           labelWrap
@@ -77,22 +84,10 @@ const AddCourse = () => {
           >
             <Input />
           </Form.Item>
-
-          <Form.Item
-            label="Course price"
-            name="coursePrice"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
+          <DynamicField />
           <Form.Item label=" ">
-            <Button type="primary" htmlType="submit">
-              add
+            <Button type="primary" htmlType="submit" style={{ width: "60%" }}>
+              Confirm
             </Button>
           </Form.Item>
         </Form>
