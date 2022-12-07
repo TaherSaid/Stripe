@@ -7,12 +7,10 @@ export async function getServerSideProps(context) {
     props: { StripeId },
   };
 }
-const stripePromise = loadStripe(
-  `pk_test_51M9FZvLv1GvWMcZ2SHCVJJo0McI2g7E0q5ur85WH0eJDR8KusMUsBlsOGN11DWJD895UwBKEYnQl7RXipsAE49P500w8inn12T`
-);
 
 export default function Checkout({ StripeId }) {
-  const handleClick = async (event) => {
+  const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
+  const handleClick = async () => {
     const response = await fetch("./api/checkout/session", {
       method: "POST",
       headers: {

@@ -22,9 +22,9 @@ const AddCourse = () => {
       }
     }
   `;
-  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO);
+  const [addTodo] = useMutation(ADD_TODO);
 
-  const onFinish = async (e) => {
+  const onFinish = (e) => {
     try {
       fetch("./api/create-product/create", {
         method: "POST",

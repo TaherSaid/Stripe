@@ -15,7 +15,6 @@ export default async function handler(req, res) {
       currency: "usd",
       product: product.id,
     });
-    console.log(price.id);
   } catch (error) {
     res.status(400).json({ error: "enable to add new product " });
   }

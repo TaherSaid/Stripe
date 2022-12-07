@@ -6,6 +6,7 @@ import styles from "../styles/Home.module.css";
 
 const CheckoutWithoutProduct = () => {
   const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
+
   const onFinish = async (e) => {
     try {
       const res = await fetch("./api/checkout-without-product/checkout", {
