@@ -16,6 +16,7 @@ type Course {
   id: ID!
   courseName: String
   coursePrice: String
+  courseStripeId : String
   owner: User
 }
 
@@ -34,5 +35,5 @@ type Mutation {
     tel: String
   ): User
 
-  createCourse(courseName: String, coursePrice: String): Course
+  createCourse(courseName: String, coursePrice: String,courseStripeId: String): Course
 }
