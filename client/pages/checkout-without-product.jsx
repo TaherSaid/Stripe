@@ -1,24 +1,31 @@
-import React from "react";
-import { Button, Form, Input } from "antd";
-import Navbar from "../src/components/navbar";
+import { gql, useLazyQuery } from "@apollo/client";
 import { loadStripe } from "@stripe/stripe-js";
+import { Button, Form, Input } from "antd";
+import React from "react";
+import Navbar from "../src/components/navbar";
 import styles from "../styles/Home.module.css";
 
 const CheckoutWithoutProduct = () => {
-  const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
-
+    const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
+  const CHECKOUT_SESSION_WITHOUT_PRODUCT = gql`
+    query Query($totalPrice: String) {
+      checkoutWithoutProducts(totalPrice: $totalPrice)
+    }
+  `;
+  const [checkoutWithoutProduct] = useLazyQuery(
+    CHECKOUT_SESSION_WITHOUT_PRODUCT
+  );
   const onFinish = async (e) => {
     try {
-      const res = await fetch("./api/checkout-without-product/checkout", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
+      const { data } = await checkoutWithoutProduct({
+        variables: {
+          ...e,
         },
-        body: JSON.stringify({ ...e }),
       });
-      const { sessionId } = await res.json();
       const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ sessionId });
+      await stripe.redirectToCheckout({
+        sessionId: data.checkoutWithoutProducts,
+      });
     } catch (error) {
       console.error(error);
     }

@@ -1,13 +1,13 @@
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import { useQuery, gql } from "@apollo/client";
-import { Card, Row, Col, Spin, Alert } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import Navbar from "../src/components/navbar";
+import { gql, useQuery } from "@apollo/client";
+import { Alert, Col, Row, Spin } from "antd";
+import Image from "next/image";
 import ProductCard from "../src/components/cardProduct";
+import Navbar from "../src/components/navbar";
+import styles from "../styles/Home.module.css";
 
 export default function Home() {
-  const GET_LOCATIONS = gql`
+  const GET_COURSES = gql`
     query Query {
       courses {
         id
@@ -21,7 +21,7 @@ export default function Home() {
     }
   `;
 
-  const { loading, error, data } = useQuery(GET_LOCATIONS);
+  const { loading, error, data } = useQuery(GET_COURSES);
 
   return (
     <div>

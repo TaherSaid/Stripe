@@ -1,58 +1,35 @@
-import { Button, Form, Input } from "antd";
-import styles from "../styles/Home.module.css";
 import { gql, useMutation } from "@apollo/client";
-import Navbar from "../src/components/navbar";
-import DynamicField from "../src/components/dynamicFields";
+import { Button, Form, Input } from "antd";
 import { useRouter } from "next/router";
+import DynamicField from "../src/components/dynamicFields";
+import Navbar from "../src/components/navbar";
+import styles from "../styles/Home.module.css";
 
 const AddCourse = () => {
   const router = useRouter();
-  const ADD_TODO = gql`
-    mutation Mutation(
-      $courseName: String
-      $coursePrice: [String]
-      $courseStripeId: [String]
-    ) {
-      createCourse(
-        courseName: $courseName
-        coursePrice: $coursePrice
-        courseStripeId: $courseStripeId
-      ) {
+  const ADD_COURSE = gql`
+    mutation Mutation($courseName: String, $coursePrice: [String]) {
+      createCourse(courseName: $courseName, coursePrice: $coursePrice) {
         id
         courseName
         coursePrice
       }
     }
   `;
-  const [addTodo] = useMutation(ADD_TODO);
+  const [addTodo] = useMutation(ADD_COURSE);
   const onFinish = (e) => {
     try {
-      const coursePrice = e?.coursePrices?.map((coursePrise) => {
+      const coursePrices = e?.coursePrices?.map((coursePrise) => {
         return coursePrise.coursPrice;
       });
-
-      fetch("./api/create-product/create", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
+      addTodo({
+        variables: {
           courseName: e.courseName,
-          coursePrices: coursePrice,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          addTodo({
-            variables: {
-              courseName: e.courseName,
-              coursePrice,
-              courseStripeId: data.price,
-            },
-          }).then(() => {
-            router.push("/");
-          });
-        });
+          coursePrice: coursePrices,
+        },
+      }).then(() => {
+        router.push("/");
+      });
     } catch (error) {
       console.error(error);
     }

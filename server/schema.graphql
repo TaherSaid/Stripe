@@ -25,6 +25,8 @@ type Query {
   user(id: ID!): User
   courses: [Course]
   course(id: ID!): Course
+  checkout(StripeId: String): String
+  checkoutWithoutProducts(totalPrice: String): String
 }
 
 type Mutation {
@@ -38,6 +40,5 @@ type Mutation {
   createCourse(
     courseName: String
     coursePrice: [String]
-    courseStripeId: [String]
   ): Course
 }

@@ -1,3 +1,4 @@
+import { gql, useQuery } from "@apollo/client";
 import { loadStripe } from "@stripe/stripe-js";
 import { Button } from "antd";
 
@@ -10,18 +11,20 @@ export async function getServerSideProps(context) {
 
 export default function Checkout({ StripeId }) {
   const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
-  const handleClick = async () => {
-    const response = await fetch("./api/checkout/session", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ StripeId }),
-    });
-    const { sessionId } = await response.json();
+  const CHECKOUT_SESSION = gql`
+    query Query($stripeId: String) {
+      checkout(StripeId: $stripeId)
+    }
+  `;
+  const { data } = useQuery(CHECKOUT_SESSION, {
+    variables: { stripeId: StripeId },
+  });
 
+  const handleClick = async () => {
     const stripe = await stripePromise;
-    const { error } = await stripe.redirectToCheckout({ sessionId });
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: data.checkout,
+    });
   };
   return (
     <div>
