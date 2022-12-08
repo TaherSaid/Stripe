@@ -9,6 +9,7 @@ type User {
   lastName: String
   email: String
   tel: String
+  customerId: String
   role: Role
 }
 
@@ -36,9 +37,12 @@ type Mutation {
     email: String
     tel: String
   ): User
-
-  createCourse(
-    courseName: String
-    coursePrice: [String]
-  ): Course
+  createCustomer(
+    firstName: String
+    lastName: String
+    email: String
+    tel: String
+    role: String
+  ): String
+  createCourse(courseName: String, coursePrice: [String]): Course
 }
