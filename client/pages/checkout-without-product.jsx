@@ -6,7 +6,9 @@ import Navbar from "../src/components/navbar";
 import styles from "../styles/Home.module.css";
 
 const CheckoutWithoutProduct = () => {
-    const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
+  const stripePromise = loadStripe(
+    `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`
+  );
   const CHECKOUT_SESSION_WITHOUT_PRODUCT = gql`
     query Query($totalPrice: String) {
       checkoutWithoutProducts(totalPrice: $totalPrice)

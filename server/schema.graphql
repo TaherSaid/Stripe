@@ -29,6 +29,7 @@ type Query {
   course(id: ID!): Course
   checkout(StripeId: String, ownerAccountId: String): String
   checkoutWithoutProducts(totalPrice: String): String
+  retrieveCheckoutSession(sessionId: String): String
 }
 
 type Mutation {

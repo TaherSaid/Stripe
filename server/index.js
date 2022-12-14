@@ -46,7 +46,7 @@ const resolvers = {
           },
         },
       });
-
+      // console.log(session);
       return session.id;
     },
     checkoutWithoutProducts: async (_, args) => {
@@ -70,6 +70,13 @@ const resolvers = {
         cancel_url: "http://localhost:3000/400",
       });
       return session.id;
+    },
+    retrieveCheckoutSession: async (_, args) => {
+      const session = await stripe.checkout.sessions.retrieve(
+        "cs_test_a1rRGYgs6y4481bdyOwAxs9TgZMiq7l8HLSOhD0kicLrXqfNRr7T3yM1"
+      );
+      console.log("retrieve checkout session =>", session);
+      return session.payment_status;
     },
   },
   Mutation: {
