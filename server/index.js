@@ -24,8 +24,10 @@ const resolvers = {
     course(_, args) {
       return courses.find((course) => course.id === args.id);
     },
+
     checkout: async (_, args) => {
-      const { StripeId } = args;
+      const { StripeId, ownerAccountId } = args;
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
@@ -36,8 +38,15 @@ const resolvers = {
         ],
         mode: "payment",
         success_url: `http://localhost:3000`,
-        cancel_url: "http://localhost:3000/400",
+        cancel_url: "http://localhost:3000",
+        payment_intent_data: {
+          application_fee_amount: 200,
+          transfer_data: {
+            destination: ownerAccountId,
+          },
+        },
       });
+
       return session.id;
     },
     checkoutWithoutProducts: async (_, args) => {
@@ -82,9 +91,35 @@ const resolvers = {
         const newUser = { id, customerId: customer?.id, ...args };
         users.push(newUser);
 
-        return "Welcome your account was created successfully";
+        return `Welcome ${args.email} your account was created successfully`;
       } catch (error) {
         console.log(error);
+      }
+    },
+    createAccount: async (_, args) => {
+      const userId = uuidv4();
+      try {
+        const { id } = await stripe.accounts.create({
+          type: "express",
+          country: "US",
+          email: args.email,
+          business_type: args.businessType,
+          capabilities: {
+            card_payments: { requested: true },
+            transfers: { requested: true },
+          },
+        });
+        const accountLink = await stripe.accountLinks.create({
+          account: id,
+          refresh_url: "http://localhost:3000/add-account",
+          return_url: "http://localhost:3000",
+          type: "account_onboarding",
+        });
+        const newUser = { id: userId, accountId: id, ...args };
+        users.push(newUser);
+        return accountLink.url;
+      } catch (error) {
+        console.log("error =>", error);
       }
     },
     createCourse: async (_, args) => {

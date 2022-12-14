@@ -3,23 +3,23 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Button } from "antd";
 
 export async function getServerSideProps(context) {
-  const { StripeId } = context.query;
+  const { StripeId, ownerAccountId } = context.query;
   return {
-    props: { StripeId },
+    props: { StripeId, ownerAccountId },
   };
 }
 
 export default function Checkout({ StripeId }) {
   const stripePromise = loadStripe(`${process.env.STRIPE_PUBLIC_KEY}`);
   const CHECKOUT_SESSION = gql`
-    query Query($stripeId: String) {
-      checkout(StripeId: $stripeId)
+    query Query($stripeId: String, $ownerAccountId: String) {
+      checkout(StripeId: $stripeId, ownerAccountId: $ownerAccountId)
     }
   `;
-  const { data } = useQuery(CHECKOUT_SESSION, {
-    variables: { stripeId: StripeId },
+  const {data} = useQuery(CHECKOUT_SESSION, {
+    variables: { stripeId: StripeId, ownerAccountId },
   });
-
+  
   const handleClick = async () => {
     const stripe = await stripePromise;
     const { error } = await stripe.redirectToCheckout({

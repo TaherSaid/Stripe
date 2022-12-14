@@ -10,6 +10,7 @@ type User {
   email: String
   tel: String
   customerId: String
+  accountId: String
   role: Role
 }
 
@@ -26,7 +27,7 @@ type Query {
   user(id: ID!): User
   courses: [Course]
   course(id: ID!): Course
-  checkout(StripeId: String): String
+  checkout(StripeId: String, ownerAccountId: String): String
   checkoutWithoutProducts(totalPrice: String): String
 }
 
@@ -37,6 +38,7 @@ type Mutation {
     email: String
     tel: String
   ): User
+
   createCustomer(
     firstName: String
     lastName: String
@@ -44,5 +46,15 @@ type Mutation {
     tel: String
     role: String
   ): String
+
+  createAccount(
+    firstName: String
+    lastName: String
+    email: String
+    tel: String
+    role: String
+    businessType: String
+  ): String
+
   createCourse(courseName: String, coursePrice: [String]): Course
 }

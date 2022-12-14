@@ -20,9 +20,10 @@ function Navbar() {
             </Link>
           </Menu.Item>
           <Menu.Item key="addNewCustomer">
-            <Link href="/add-customer">
-              Add new customer
-            </Link>
+            <Link href="/add-customer">Add new customer</Link>
+          </Menu.Item>
+          <Menu.Item key="addNewAccount">
+            <Link href="/add-account">Add new connected account</Link>
           </Menu.Item>
         </Menu>
       </div>
