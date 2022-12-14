@@ -70,6 +70,23 @@ const resolvers = {
       users.push(newUser);
       return newUser;
     },
+    createCustomer: async (_, args) => {
+      const id = uuidv4();
+
+      try {
+        const customer = await stripe.customers.create({
+          email: args.email,
+          name: `${args.firstName} ${args.lastName}`,
+          phone: args.tel,
+        });
+        const newUser = { id, customerId: customer?.id, ...args };
+        users.push(newUser);
+
+        return "Welcome your account was created successfully";
+      } catch (error) {
+        console.log(error);
+      }
+    },
     createCourse: async (_, args) => {
       const { coursePrice, courseName } = args;
       const id = uuidv4();

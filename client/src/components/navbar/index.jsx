@@ -19,6 +19,11 @@ function Navbar() {
               Create a Checkout without products
             </Link>
           </Menu.Item>
+          <Menu.Item key="addNewCustomer">
+            <Link href="/add-customer">
+              Add new customer
+            </Link>
+          </Menu.Item>
         </Menu>
       </div>
     </nav>
