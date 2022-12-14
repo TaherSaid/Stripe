@@ -3,7 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const ProductCard = ({ productPrice, productName, StripeId }) => {
+const ProductCard = ({
+  productPrice,
+  productName,
+  stripeProductIds,
+  ownerAccountId,
+}) => {
+  console.log("ownerAccountId =>", ownerAccountId);
   return (
     <Card
       cover={
@@ -19,7 +25,7 @@ const ProductCard = ({ productPrice, productName, StripeId }) => {
           <Link
             href={{
               pathname: "/checkout",
-              query: { StripeId: StripeId[index] },
+              query: { StripeId: stripeProductIds[index], ownerAccountId },
             }}
             key="checkout"
           >
