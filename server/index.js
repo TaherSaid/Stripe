@@ -1,10 +1,16 @@
-import { ApolloServer } from "apollo-server";
 import * as dotenv from "dotenv";
 import { readFileSync } from "fs";
 import Stripe from "stripe";
 import { v4 as uuidv4 } from "uuid";
 import { courses } from "./dataSources/productsData.js";
 import { users } from "./dataSources/userData.js";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import express from "express";
+import http from "http";
+import cors from "cors";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -163,8 +169,41 @@ const resolvers = {
     },
   },
 };
-const server = new ApolloServer({ typeDefs, resolvers });
 
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`);
+const app = express();
+const httpServer = http.createServer(app);
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
+
+await server.start();
+
+app.post(
+  "/webhook",
+  express.json({ type: "application/json" }),
+  (request, response) => {
+    const event = request.body;
+
+    switch (event.type) {
+      case "customer.created":
+        const paymentIntent = event.data.object;
+        console.log(paymentIntent);
+        break;
+      case "payment_intent.succeededd":
+        const paymentMethod = event.data.object;
+        console.log(paymentMethod);
+        break;
+      default:
+    }
+
+    response.json({ received: true });
+  }
+);
+
+app.use("/", cors(), bodyParser.json(), expressMiddleware(server));
+await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+
+console.log(`Server ready at http://localhost:4000/`);
