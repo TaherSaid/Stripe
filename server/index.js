@@ -33,28 +33,43 @@ const resolvers = {
 
     checkout: async (_, args) => {
       const { StripeId, ownerAccountId } = args;
+      let transfer_data;
 
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [
-          {
-            price: StripeId,
-            quantity: 1,
+      // If the product belong to an expert we will add the payement intent data object to the checkout session object
+      if (ownerAccountId) {
+        transfer_data = {
+          payment_intent_data: {
+            application_fee_amount: 200,
+            transfer_data: {
+              destination: ownerAccountId,
+            },
           },
-        ],
-        mode: "payment",
-        success_url: `http://localhost:3000`,
-        cancel_url: "http://localhost:3000",
-        payment_intent_data: {
-          application_fee_amount: 200,
-          transfer_data: {
-            destination: ownerAccountId,
-          },
-        },
-      });
-      // console.log(session);
-      return session.id;
+        };
+      }
+
+      try {
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          line_items: [
+            {
+              price: StripeId,
+              quantity: 1,
+            },
+          ],
+          metadata: { ownerAccount: ownerAccountId },
+          mode: "payment",
+          success_url: `http://localhost:3000`,
+          cancel_url: "http://localhost:3000",
+          // Remove the comment below, if you want to transfer the amount to the expert stripe account.
+          // ...transfer_data,
+        });
+        return session.id;
+      } catch (error) {
+        console.log(error);
+      }
     },
+
+    //Checkout without product saved in stripe account
     checkoutWithoutProducts: async (_, args) => {
       const { totalPrice } = args;
       const session = await stripe.checkout.sessions.create({
@@ -184,13 +199,32 @@ await server.start();
 app.post(
   "/webhook",
   express.json({ type: "application/json" }),
-  (request, response) => {
+  async (request, response) => {
     const event = request.body;
 
     switch (event.type) {
       case "customer.created":
         const paymentIntent = event.data.object;
         console.log(paymentIntent);
+        break;
+      case "checkout.session.completed":
+        const session = event.data.object;
+        const application_fee_amount = 200;
+        try {
+          const payout = await stripe.payouts.create(
+            {
+              amount: session.amount_total - application_fee_amount,
+              currency: "usd",
+              method: "instant",
+              source_type: "card",
+            },
+            { stripeAccount: session.metadata.ownerAccount }
+          );
+          console.log("payout =>", payout);
+        } catch (error) {
+          console.log(error);
+        }
+
         break;
       case "payment_intent.succeededd":
         const paymentMethod = event.data.object;

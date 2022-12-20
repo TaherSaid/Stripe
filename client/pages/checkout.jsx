@@ -37,13 +37,18 @@ export default function Checkout({ StripeId, ownerAccountId }) {
     "retrieve checkout session error =>",
     retrieveCheckoutSession.error
   );
+
   const handleClick = async () => {
     const stripe = await stripePromise;
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: data.checkout,
-    });
-    console.log("checkout error =>", error);
+    try {
+      await stripe.redirectToCheckout({
+        sessionId: data?.checkout,
+      });
+    } catch (error) {
+      console.log("checkout error =>", error);
+    }
   };
+
   useEffect(() => {
     console.log("checkout data =>", data);
   }, [data]);

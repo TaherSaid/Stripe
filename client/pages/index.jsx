@@ -57,7 +57,7 @@ export default function Home() {
                       productName={course.courseName}
                       productPrice={course.coursePrice}
                       stripeProductIds={course.courseStripeId}
-                      ownerAccountId={course.owner.accountId}
+                      ownerAccountId={course?.owner?.accountId}
                     />
                   </Col>
                 ))}
